@@ -2,10 +2,13 @@ FROM node
 
 WORKDIR /app
 
-COPY . /app
+# This is for optimization for layer based architecture
+COPY package.json /app
 
 # RUN will run when creating the image
 RUN npm install
+
+COPY . /app
 
 EXPOSE 80
 
