@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: story
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+        - name: story
+          image: mandressl/kub-data-demo
+          env: 
+          #  -  name: STORY_FOLDER
+          #     value: 'story'
+           -  name: STORY_FOLDER
+              valueFrom:
+                configMapKeyRef:
+                  name: data-store-env
+                  key: folder
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: story-volume
+              mountPath: /app/story
+      volumes:
+          - name: story-volume
+            # Creates a new empty directory on the pod's filesystem, per pod
+            # emptyDir: {}
+
+            # Creates a new empty directory on host machine, per node
+            # hostPath:
+            #   path: /data
+            #   type: DirectoryOrCreate
+
+            # Persistent Volume Claim
+            persistentVolumeClaim:
+              claimName: host-pvc
