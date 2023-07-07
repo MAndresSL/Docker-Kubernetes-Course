@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector: 
+    app: second-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+# Imperative command: kubectl create deployment second-app-deployment --image=
+# We tell Kubernetes what kind of object we want to create
+kind: Deployment
+metadata:
+  name: second-app-deployment
+spec: 
+  # How many replicas of the pod we want to run
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: second-app
+      tier: backend
+  # Template always describes a pod, we don't need kind
+  template:
+  # What kind of pod we want to run, this is another object
+    metadata: 
+      labels: 
+        app: second-app
+        tier: backend
+    spec:
+      containers:
+        - name: second-node
+          image: mandressl/kub-first-app

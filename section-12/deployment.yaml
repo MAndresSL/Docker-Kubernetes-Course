@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+# Imperative command: kubectl create deployment second-app-deployment --image=
+# We tell Kubernetes what kind of object we want to create
+kind: Deployment
+metadata:
+  name: second-app-deployment
+  labels:
+    group: example
+spec: 
+  # How many replicas of the pod we want to run
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: second-app
+      tier: backend
+    # matchExpressions:
+    #   - {key: app, operator: In: [second-app, first-app]}
+  # Template always describes a pod, we don't need kind
+  template:
+  # What kind of pod we want to run, this is another object
+    metadata: 
+      labels: 
+        app: second-app
+        tier: backend
+    spec:
+      containers:
+        - name: second-node
+          image: mandressl/kub-first-app
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            initialDelaySeconds: 5
